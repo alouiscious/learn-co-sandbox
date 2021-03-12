@@ -1,0 +1,140 @@
+Class method on the Song class.
+  .all or Show.all is a reader for the @@all class variable(i.e. Show.all container).
+
+
+class Song
+
+  attr_accessor :name
+  @@all = []
+ 
+  def initialize(name)
+    @name = name
+  end
+ 
+  def self.all
+    @@all
+  end
+ 
+end  
+
+
+  The method is a way to use and manipulate the data contained in the  variable @@all.
+  with out the method nothing could access the class variable's contents. Espescially not other apps.
+  
+  Use self.all to read the (@@all) variable's data.
+    self.all method is a reader method.
+   
+tim = Person.new("Tim")
+tim.name 
+
+Class finder provides access to all instances
+
+class Person
+  attr_accessor :name
+  @@all = []
+ 
+  def initialize(name)
+    @name = name
+    @@all << self
+  end
+ 
+  def self.all
+    @@all
+  end
+ 
+end
+
+person.all CAN help find things
+
+
+                
+Use the #find method on the Person class.  
+#FIND IS TOO MUCH CODE See... below.
+
+it will find the specific instance of the item your looking for. in this case... a person or a attribute about a person in the class.
+
+
+grace_hopper = Person.all.find{|person| person.name == "Grace Hopper"}
+grace_hopper #=> #<Person @name="Grace Hopper">
+ 
+avi_flombaum = Person.all.find{|person| person.name == "Avi Flombaum"}
+avi_flombaum #=> nil
+
+Wrap up  all of the above code. Encapsulate the logic.
+Teach the Person class how to search.
+
+Person.find_by_name = Person.find{|p| p.name == "Grace Hopper"}
+
+make this the self.find_by_name class method
+
+  def self.find_by_name(name)
+    @@all.find{|person| person.name == name}
+  end
+  
+EVEN THIS METHOD CAN BE IMPROVED
+
+This leaves you in a position where if you have to change the names of any of the code the program breaks in many places. too many places than you would want to fix.
+Using the reader method is better than reaching in to the whole class.
+  
+class Person
+  attr_accessor :name
+  @@people = [] # changed from @@all
+ 
+  def initialize(name)
+    @name = name
+    @@people << self # changed from @@all
+  end
+ 
+  def self.all
+    @@people # changed from @@all
+  end
+ 
+  def self.find_by_name(name)
+    @@people.find{|person| person.name == name}
+    # changed from @@all
+  end
+ 
+end
+
+Always hide the how and show the what IN YOUR CODE
+USE Person.find_by_name("name")
+
+
+
+Creating a Person class that expects to accept :name, :age, :company from a CSV data file.
+the CSV contents becomes an instance of the class.
+
+csv_data = 
+"Elon Musk, 45, Tesla
+Mark Zuckerberg, 32, Facebook
+Martha Stewart, 74, MSL"
+
+rows = 
+csv_data. split("\n")
+people =  row.collect do |row|
+  data = row.split (",")
+  name = data[0]
+  age = data[1]
+  company = data[2]
+  person = Person.new
+  person.name = name
+  person.age = age
+  person.company = company
+  person
+end
+
+WHEN YOU CALL PEOPLE...
+people
+#=> [
+  #<Person @name="Elon Musk"...>,
+  #<Person @name="Mark Zuckerberg"...>,
+  # ...
+# ]
+
+ITS CALLING ON THE CORRECT Person METHOD,
+BUT IT'S STILL TOO MUCH CODE!!!
+
+
+ If we need more functionality when making an instance, instead of modifying INITIALIZE, we can extend it by wrapping it within a custom constructor.
+
+
